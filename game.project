@@ -11,3 +11,9 @@ height = 640
 [android]
 input_method = HiddenInputField
 
+[project]
+title = editor-script-templates
+
+[library]
+include_dirs = editor-script-templates
+

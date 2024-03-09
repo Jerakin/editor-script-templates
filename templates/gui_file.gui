@@ -1,0 +1,24 @@
+script: ""
+fonts {
+  name: "game"
+  font: "/builtins/fonts/system_font.font"
+}
+textures {
+  name: "particle_blob"
+  texture: "/builtins/graphics/particle_blob.tilesource"
+}
+background_color {
+  x: 0.0
+  y: 0.0
+  z: 0.0
+  w: 0.0
+}
+layers {
+  name: "text"
+}
+layers {
+  name: "sprite"
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
+max_nodes: 512
