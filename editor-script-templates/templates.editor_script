@@ -2,22 +2,52 @@ local exists, defaults = pcall(require,"templates")
 
 local M = {}
 
-function dir_name(str)
-    return str:match("(.*[/\\])")
-end
+local _empty = {}
+
+local dialog = editor.ui.component(function(props)
+    local name, set_name = editor.ui.use_state("")
+
+    return editor.ui.dialog({
+        title= props.title,
+        content = editor.ui.vertical({
+            padding = editor.ui.PADDING_LARGE,
+            children = {
+                editor.ui.string_field({
+                    value = name,
+                    on_value_changed = set_name
+                })
+            }
+        }),
+        buttons = {
+            editor.ui.dialog_button({
+                text = "Cancel"
+            }),
+            editor.ui.dialog_button({
+                text = "Add",
+                enabled = name ~= "",
+                default = true,
+                result = name
+            }),
+        }
+    })
+end)
+
 
 local function split_path(path)
     local parent, stem, suffix = path:match("(.-)([^\\/]-)(%.[^\\/]*)$")
     return parent, stem, suffix
 end
 
+
 local function copy_file(selection, template_path)
+    local file_name = editor.ui.show_dialog(dialog({ title = "File name" }))
+    
     local path = editor.get(selection, "path")
     local parent, _, _ = split_path(path)
     
-    local _, out_name, out_suffix = split_path(template_path)
+    local _, _, out_suffix = split_path(template_path)
 
-    local new_file_location = "." .. parent .. out_name .. out_suffix
+    local new_file_location = "." .. parent .. file_name .. out_suffix
 
     local template = io.open(template_path, "r")
     local template_content = template:read("*a")
@@ -29,10 +59,11 @@ local function copy_file(selection, template_path)
 end
 
 local function generate_commands()
-    local commands = {}
     if not exists then
-        return {}
+        return _empty
     end
+
+    local commands = {}
     for name, template_path in pairs(defaults) do
         table.insert(commands, {
             label = "Create " .. name,
